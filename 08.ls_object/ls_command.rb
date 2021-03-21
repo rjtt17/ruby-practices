@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'optparse'
 require 'pathname'
 require 'etc'
 require 'date'
+require 'active_support/time'
 
 class LsCommand
   def self.display(pathname, long_format: false, reverse: false, dot: false)
@@ -22,18 +22,30 @@ class LsFormatter
     @files_status = filenames.map { |filename| FileStatus.new(filename) }
   end
 
-  def max_length_hash(key)
-    {
-      nlink: files_status.map(&:nlink).map(&:to_s).map(&:size).max,
-      username: files_status.map(&:username).map(&:size).max,
-      groupname: files_status.map(&:groupname).map(&:size).max,
-      size: files_status.map(&:size).map(&:to_s).map(&:size).max,
-      basename: files_status.map(&:basename).map(&:size).max
-    }[key]
-  end
+  private
 
   def fetch_basenames
     files_status.map(&:basename)
+  end
+
+  def max_length_nlink
+    files_status.map(&:nlink).map(&:to_s).map(&:size).max
+  end
+
+  def max_length_username
+    files_status.map(&:username).map(&:size).max
+  end
+
+  def max_length_groupname
+    files_status.map(&:groupname).map(&:size).max
+  end
+
+  def max_length_size
+    files_status.map(&:size).map(&:to_s).map(&:size).max
+  end
+
+  def max_basename_length
+    files_status.map(&:basename).map(&:size).max
   end
 end
 
@@ -41,7 +53,12 @@ class LongFormatter < LsFormatter
   def list
     rows = ["total #{total_blocks}"]
     rows += files_status.map(&:to_h).map do |row|
-      "#{row[:type]}#{row[:mode]}  #{row[:nlink].to_s.rjust(max_length_hash(:nlink))} #{row[:username].rjust(max_length_hash(:username))}  #{row[:groupname].rjust(max_length_hash(:groupname))}  #{row[:size].to_s.rjust(max_length_hash(:size))} #{row[:mtime]} #{row[:basename]}"
+      result = "#{row[:type]}#{row[:mode]}"
+      result += "  #{row[:nlink].to_s.rjust(max_length_nlink)}"
+      result += " #{row[:username].rjust(max_length_username)}"
+      result += "  #{row[:groupname].rjust(max_length_groupname)}"
+      result += "  #{row[:size].to_s.rjust(max_length_size)} #{row[:mtime]}"
+      result + " #{row[:basename]}"
     end
     rows.join("\n")
   end
@@ -74,7 +91,7 @@ class ShortFormatter < LsFormatter
   def format(basenames)
     basenames.map do |row_basenames|
       row_basenames.map do |basename|
-        basename.ljust(max_length_hash(:basename) + 7)
+        basename.ljust(max_basename_length + 7)
       end.join.rstrip
     end.join("\n")
   end
@@ -114,7 +131,7 @@ class FileStatus
   end
 
   def mode
-    digits = sprintf("%#o", stat.mode)[-3..-1]
+    digits = stat.mode.to_s(8)[-3..-1]
     digits.each_char.map do |digit|
       fetch_permission(digit)
     end.join
@@ -137,7 +154,7 @@ class FileStatus
   end
 
   def mtime
-    Time.now.to_date.prev_month(6) > stat.mtime.to_date ? stat.mtime.strftime('%_m %e  %Y') : stat.mtime.strftime('%_m %e %H:%M')
+    Time.current.to_date.prev_month(6) > stat.mtime.to_date ? stat.mtime.strftime('%_m %e  %Y') : stat.mtime.strftime('%_m %e %H:%M')
   end
 
   def basename
@@ -159,12 +176,3 @@ class FileStatus
     }[digit]
   end
 end
-
-#opt = OptionParser.new
-#hash_args = {long_format: false, reverse: false, dot: false}
-#opt.on('-l') {|v| hash_args[:long_format] = v }
-#opt.on('-r') {|v| hash_args[:reverse] = v }
-#opt.on('-a') {|v| hash_args[:dot] = v }
-#opt.parse!(ARGV)
-#pathname = ARGV.empty? ? Pathname.getwd : Pathname(ARGV[0])
-#puts LsCommand.display(pathname, **hash_args)
