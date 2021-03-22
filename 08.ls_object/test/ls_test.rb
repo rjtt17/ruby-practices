@@ -6,6 +6,7 @@ require_relative '../ls_command.rb'
 
 class LsCommandTest < Test::Unit::TestCase
   PATHNAME = Pathname('fixtures/books_app')
+  NOT_EXIST_PATHNAME = Pathname('not_exitst/path')
 
   def test_ls
     expected = <<~TEXT.chomp
@@ -73,5 +74,12 @@ class LsCommandTest < Test::Unit::TestCase
   def test_ls_alr_option
     expected = `ls -alr #{PATHNAME}`.chomp
     assert_equal expected, LsCommand.display(PATHNAME, long_format: true, reverse: true, dot: true)
+  end
+
+  def test_not_exist_path
+    e = assert_raises ArgumentError do
+      LsCommand.display(NOT_EXIST_PATHNAME)
+    end
+    assert_equal 'パス not_exitst/path は存在しません', e.message
   end
 end
