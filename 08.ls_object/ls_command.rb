@@ -7,6 +7,8 @@ require 'active_support/time'
 
 class LsCommand
   def self.display(pathname, long_format: false, reverse: false, dot: false)
+    raise ArgumentError, "パス #{pathname} は存在しません" unless pathname.exist?
+
     pattern = pathname + '*'
     params = dot ? [pattern, File::FNM_DOTMATCH] : [pattern]
     filenames = Dir.glob(*params).sort
