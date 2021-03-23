@@ -47,7 +47,7 @@ class LsFormatter
   end
 
   def max_basename_length
-    files_status.map(&:basename).map(&:size).max
+    fetch_basenames.map(&:size).max
   end
 end
 
@@ -120,23 +120,8 @@ class FileStatus
     }
   end
 
-  def stat
-    File::Stat.new(filename)
-  end
-
   def blocks
     stat.blocks
-  end
-
-  def type
-    Pathname(filename).directory? ? 'd' : '-'
-  end
-
-  def mode
-    digits = stat.mode.to_s(8)[-3..-1]
-    digits.each_char.map do |digit|
-      fetch_permission(digit)
-    end.join
   end
 
   def nlink
@@ -155,15 +140,30 @@ class FileStatus
     stat.size
   end
 
-  def mtime
-    Time.current.to_date.prev_month(6) > stat.mtime.to_date ? stat.mtime.strftime('%_m %e  %Y') : stat.mtime.strftime('%_m %e %H:%M')
-  end
-
   def basename
     File.basename(filename)
   end
 
   private
+
+  def mtime
+    Time.current.to_date.prev_month(6) > stat.mtime.to_date ? stat.mtime.strftime('%_m %e  %Y') : stat.mtime.strftime('%_m %e %H:%M')
+  end
+
+  def stat
+    File::Stat.new(filename)
+  end
+
+  def type
+    Pathname(filename).directory? ? 'd' : '-'
+  end
+
+  def mode
+    digits = stat.mode.to_s(8)[-3..-1]
+    digits.each_char.map do |digit|
+      fetch_permission(digit)
+    end.join
+  end
 
   def fetch_permission(digit)
     {
