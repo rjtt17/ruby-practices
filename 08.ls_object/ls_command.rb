@@ -31,19 +31,19 @@ class LsFormatter
   end
 
   def max_length_nlink
-    files_status.map(&:nlink).map(&:to_s).map(&:size).max
+    files_status.map {|fs| fs.nlink.to_s.size }.max
   end
 
   def max_length_username
-    files_status.map(&:username).map(&:size).max
+    files_status.map {|fs| fs.username.size }.max
   end
 
   def max_length_groupname
-    files_status.map(&:groupname).map(&:size).max
+    files_status.map {|fs| fs.groupname.size }.max
   end
 
   def max_length_size
-    files_status.map(&:size).map(&:to_s).map(&:size).max
+    files_status.map {|fs| fs.size.to_s.size }.max
   end
 
   def max_basename_length
