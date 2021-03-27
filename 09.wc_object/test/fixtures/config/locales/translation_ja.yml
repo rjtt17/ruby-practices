@@ -1,0 +1,24 @@
+ja:
+  activerecord:
+    models:
+      book: 本
+      report: 日報
+      comment: コメント
+
+    attributes:
+      book:
+        author: 著者
+        memo: メモ
+        picture: 画像
+        title: タイトル
+      user:
+        name: 氏名
+        postal_code: 郵便番号
+        address: 住所
+        self_introduction: 自己紹介文
+        avatar: ユーザ画像
+      report:
+        title: タイトル
+        content: 内容
+        user: 作成者
+        created_on: 作成日

@@ -1,0 +1,22 @@
+<div class="comments-container">
+  <strong><%= Comment.model_name.human %>:</strong>
+  <% if commentable.comments.present? %>
+    <ul>
+      <% commentable.comments.order(:id).includes(:user).each do |comment| %>
+        <li>
+          <%= comment.content %>
+          <small>
+            (<%= link_to comment.user.name_or_email, comment.user %> - <%= l comment.created_at, format: :short %>)
+          </small>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    （コメントがありません）
+  <% end %>
+  <%= form_with model: [commentable, commentable.comments.new], local: true do |f| %>
+    <% # NOTE: ブラウザ側で必須チェックを行い、サーバーサイドの検証エラーを起きにくくする %>
+    <%= f.text_field :content, required: true %>
+    <%= f.submit t('.create') %>
+  <% end %>
+</div>

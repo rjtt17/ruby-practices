@@ -1,0 +1,28 @@
+<h1><%= t('views.common.title_show', name: Report.model_name.human) %></h1>
+
+<p>
+  <strong><%= Report.human_attribute_name(:title) %>:</strong>
+  <%= @report.title %>
+</p>
+
+<p>
+  <strong><%= Report.human_attribute_name(:content) %>:</strong>
+  <%= simple_format @report.content %>
+</p>
+
+<p>
+  <strong><%= Report.human_attribute_name(:user) %>:</strong>
+  <%= link_to @report.user.name_or_email, @report.user %>
+</p>
+
+<p>
+  <strong><%= Report.human_attribute_name(:created_on) %>:</strong>
+  <%= l @report.created_on %>
+</p>
+
+<%= render 'shared/comments', commentable: @report %>
+
+<% if @report.editable?(current_user) %>
+  <%= link_to t('views.common.edit'), edit_report_path(@report) %> |
+<% end %>
+<%= link_to t('views.common.back'), reports_path %>
