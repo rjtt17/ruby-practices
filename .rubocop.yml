@@ -5,4 +5,3 @@ inherit_gem:
 AllCops:
   Exclude:
     - 09.wc_object/test/fixtures/**/*
-
