@@ -37,6 +37,8 @@ class WcCommand
     end
   end
 
+  private
+
   def multiple_filnames?
     if filenames.size >= 2
       line ? WcMultipleFiles.new(filenames).format_line : WcMultipleFiles.new(filenames).format
@@ -79,16 +81,18 @@ class WcFile
     @filename = filename
   end
 
-  def text
-    Pathname(filename).read
-  end
-
   def format
     "#{count_line.to_s.rjust(8)}#{count_word.to_s.rjust(8)}#{count_byte.to_s.rjust(8)} #{filename}"
   end
 
   def format_line
     "#{count_line.to_s.rjust(8)} #{filename}"
+  end
+
+  private
+
+  def text
+    Pathname(filename).read
   end
 end
 
@@ -103,12 +107,14 @@ class WcMultipleFiles
     filenames.map(&:format).push([total]).join("\n")
   end
 
-  def total
-    "#{filenames.map(&:count_line).sum.to_s.rjust(8)}#{filenames.map(&:count_word).sum.to_s.rjust(8)}#{filenames.map(&:count_byte).sum.to_s.rjust(8)} total"
-  end
-
   def format_line
     filenames.map(&:format_line).push([total_line]).join("\n")
+  end
+
+  private
+
+  def total
+    "#{filenames.map(&:count_line).sum.to_s.rjust(8)}#{filenames.map(&:count_word).sum.to_s.rjust(8)}#{filenames.map(&:count_byte).sum.to_s.rjust(8)} total"
   end
 
   def total_line
