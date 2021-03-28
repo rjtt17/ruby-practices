@@ -31,15 +31,15 @@ class WcCommand
 
   def display
     if !filenames.empty?
-      multiple_filnames?
+      list_argument
     else
-      text?
+      list_stdin
     end
   end
 
   private
 
-  def multiple_filnames?
+  def list_argument
     if filenames.size >= 2
       line ? WcMultipleFiles.new(filenames).format_line : WcMultipleFiles.new(filenames).format
     else
@@ -47,16 +47,16 @@ class WcCommand
     end
   end
 
-  def text?
+  def list_stdin
     if text.empty?
       '引数もしくは、標準入力して下さい。'
     else
-      line ? WcStat.new(text).format_line : WcStat.new(text).format
+      line ? WcStdin.new(text).format_line : WcStdin.new(text).format
     end
   end
 end
 
-class WcStat
+class WcStdin
   include WcCount
   attr_reader :text
 
