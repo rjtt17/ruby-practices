@@ -2,9 +2,9 @@
 
 require 'open-uri'
 
-print '開発環境のデータをすべて削除して初期データを投入します。よろしいですか？[Y/n]: ' # rubocop:disable Rails/Output
+print '開発環境のデータをすべて削除して初期データを投入します。よろしいですか？[Y/n]: '
 unless $stdin.gets.chomp == 'Y'
-  puts '中止しました。' # rubocop:disable Rails/Output
+  puts '中止しました。'
   return
 end
 
@@ -26,7 +26,7 @@ def add_comments_to(commentable)
   end
 end
 
-puts '実行中です。しばらくお待ちください...' # rubocop:disable Rails/Output
+puts '実行中です。しばらくお待ちください...'
 
 Book.destroy_all
 
@@ -107,4 +107,4 @@ Comment.destroy_all
   add_comments_to(commentable)
 end
 
-puts '初期データの投入が完了しました。' # rubocop:disable Rails/Output
+puts '初期データの投入が完了しました。'
