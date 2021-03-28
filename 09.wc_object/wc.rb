@@ -10,7 +10,7 @@ opt.parse!(ARGV)
 hash_args[:filenames] = ARGV
 text = []
 if File.pipe?(STDIN)
-  while str = $stdin.gets 
+  while (str = $stdin.gets)
     text << str
   end
   text = text.join

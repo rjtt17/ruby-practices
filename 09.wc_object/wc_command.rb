@@ -1,15 +1,14 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 module WcCount
-  
-  #private
-
   def count_line
     text.count("\n")
   end
 
   def count_word
-    text.split(" ").count
+    text.split(' ').count
   end
 
   def count_byte
@@ -18,19 +17,39 @@ module WcCount
 end
 
 class WcCommand
-  def self.display(text: "", filenames: [], line: false )
+  attr_reader :text, :filenames, :line
+  def self.display(text: '', filenames: [], line: false)
+    wc_command = new(text: text, filenames: filenames, line: line)
+    wc_command.display
+  end
+
+  def initialize(text: '', filenames: [], line: false)
+    @text = text
+    @filenames = filenames
+    @line = line
+  end
+
+  def display
     if !filenames.empty?
-      if filenames.size >= 2
-        line ? WcMultipleFiles.new(filenames).format_line : WcMultipleFiles.new(filenames).format
-      else
-        line ? WcFile.new(filenames.join).format_line : WcFile.new(filenames.join).format
-      end
+      multiple_filnames?
     else
-      if text.empty?
-        "引数もしくは、標準入力して下さい。"
-      else 
-        line ? WcStat.new(text).format_line : WcStat.new(text).format
-      end
+      text?
+    end
+  end
+
+  def multiple_filnames?
+    if filenames.size >= 2
+      line ? WcMultipleFiles.new(filenames).format_line : WcMultipleFiles.new(filenames).format
+    else
+      line ? WcFile.new(filenames.join).format_line : WcFile.new(filenames.join).format
+    end
+  end
+
+  def text?
+    if text.empty?
+      '引数もしくは、標準入力して下さい。'
+    else
+      line ? WcStat.new(text).format_line : WcStat.new(text).format
     end
   end
 end
@@ -48,17 +67,16 @@ class WcStat
   end
 
   def format_line
-    "#{count_line.to_s.rjust(8)}"
+    count_line.to_s.rjust(8).to_s
   end
 end
 
 class WcFile
   include WcCount
   attr_reader :filename
-  
 
   def initialize(filename)
-    @filename = filename 
+    @filename = filename
   end
 
   def text
@@ -78,7 +96,7 @@ class WcMultipleFiles
   attr_reader :filenames
 
   def initialize(filenames)
-    @filenames = filenames.map{|filename| WcFile.new(filename) }
+    @filenames = filenames.map { |filename| WcFile.new(filename) }
   end
 
   def format
