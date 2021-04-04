@@ -1,5 +1,0 @@
-<h1><%= t('.title') %></h1>
-<p><%= User.model_name.human %>: <%= link_to @user.name, @user %></p>
-<%= render 'users/users', users: @followers %>
-<%= paginate @followers%>
-<%= link_to t('views.common.back'), @user %>
