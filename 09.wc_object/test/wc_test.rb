@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'test/unit'
-require_relative '../wc_command.rb'
+require_relative '../wc_command'
 
 class WcCommandTest < Test::Unit::TestCase
   FILENAME = ['./fixtures/Gemfile'].freeze
