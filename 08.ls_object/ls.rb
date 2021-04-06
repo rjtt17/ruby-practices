@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require './ls_command'
+require_relative './ls_command'
 
 opt = OptionParser.new
 hash_args = { long_format: false, reverse: false, dot: false }
